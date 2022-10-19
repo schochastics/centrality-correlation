@@ -2,7 +2,7 @@ suppressPackageStartupMessages(library(igraph))
 suppressPackageStartupMessages(library(netrankr))
 suppressPackageStartupMessages(library(tibble))
 source("Rscripts/functions.R")
-N <- c(10,15,25)
+N <- c(10,15,25,50,100)
 # p <- c(0.3,0.2,0.15)
 #DC<->BC
 cat("-DC vs BC\n")
@@ -11,7 +11,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
     c1 <- degree
     c2 <- betweenness
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -34,7 +34,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
     c1 <- degree
     c2 <- closeness2
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -58,7 +58,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
     c1 <- degree
     c2 <- eigen_centrality2
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -82,7 +82,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
     c1 <- betweenness
     c2 <- closeness2
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -106,7 +106,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
     c1 <- betweenness
     c2 <- eigen_centrality2
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -130,7 +130,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
     c1 <- closeness2
     c2 <- eigen_centrality2
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -153,7 +153,7 @@ saveRDS(df,"data/uncor_sim_ccec.RDS")
 #   cat(n,"\r")
 #   cmin <- 10
 #   for(r in 1:20){
-#     A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+#     A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
 #     c1 <- degree
 #     c2 <- subgraph_centrality
 #     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -177,7 +177,7 @@ saveRDS(df,"data/uncor_sim_ccec.RDS")
 #   cat(n,"\r")
 #   cmin <- 10
 #   for(r in 1:20){
-#     A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+#     A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
 #     c1 <- betweenness
 #     c2 <- subgraph_centrality
 #     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -201,7 +201,7 @@ saveRDS(df,"data/uncor_sim_ccec.RDS")
 #   cat(n,"\r")
 #   cmin <- 10
 #   for(r in 1:20){
-#     A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+#     A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
 #     c1 <- closeness
 #     c2 <- subgraph_centrality2
 #     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
@@ -225,7 +225,7 @@ saveRDS(df,"data/uncor_sim_ccec.RDS")
 #   cat(n,"\r")
 #   cmin <- 10
 #   for(r in 1:20){
-#     A <- as_adj(sample_gnp(n,runif(1,0.2,0.8)),sparse = FALSE)
+#     A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
 #     c1 <- subgraph_centrality2
 #     c2 <- eigen_centrality2
 #     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",
