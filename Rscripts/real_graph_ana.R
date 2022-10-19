@@ -1,6 +1,7 @@
+library(patchwork)
 library(tidyverse)
 df <- read_csv("data/real_sim.csv",show_col_types = FALSE)
-
+df <- df |> dplyr::filter(dens<1)
 p1 <- df |> 
   ggplot(aes(x=dens,y=disc/choose(n,2),group=combo,col=combo))+
   geom_point(alpha=0.1)+
@@ -154,8 +155,6 @@ p9 <- df |>
         strip.text =  element_text(size=12,family="serif"))+
   labs(x="global efficiency",y="")
 
-
-library(patchwork)
 p <- p1+p2+p3+
   p4+p5+p6+
   p7+p8+p9+
