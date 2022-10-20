@@ -13,15 +13,15 @@ tbl <- map_dfr(fl,function(x){
 })
 
 # ggplot(tbl,aes(x=N,y=frac,color=type))+geom_point()+facet_wrap(~type)
-# tbl %>% group_by(type) %>% summarise(m=mean(frac)) %>% arrange(-m)
-# tbl %>% arrange(-frac) %>% print(n=40)
+# tbl |> group_by(type) |> summarise(m=mean(frac)) |> arrange(-m)
+# tbl |> arrange(-frac) |> print(n=40)
 
-tbl_plot <- tbl %>% 
-  dplyr::filter(N==50) %>% 
-  mutate(a=str_remove(type,"sim_") %>% str_sub(1,2),
-         b=str_remove(type,"sim_") %>% str_sub(3,4)) %>% 
+tbl_plot <- tbl |> 
+  dplyr::filter(N==50) |> 
+  mutate(a=str_remove(type,"sim_") |> str_sub(1,2),
+         b=str_remove(type,"sim_") |> str_sub(3,4)) |> 
   mutate(a=factor(a,levels=c("dc","bc","cc","ec")),
-         b=factor(b,levels=c("dc","bc","cc","ec"))) %>% 
+         b=factor(b,levels=c("dc","bc","cc","ec"))) |> 
   arrange(a,b)
 
 tbl_plot$plot <- lapply(tbl_plot$graph,function(x){
@@ -83,6 +83,19 @@ ggsave("figures/uncor_sim.pdf",width = 11,height=6)
 system("cp figures/uncor_sim.pdf ~/Dropbox/schofie/centrality_correlation/figures/")  
 
 
-sort(sapply(tbl_plot$graph,graph.density))
-
+tbl |> 
+  select(-graph) |> 
+  mutate(frac=round(disc/choose(N,2),2)) |> 
+  select(-disc) |> 
+  mutate(type=case_when(
+    type=="sim_bccc" ~ "betweenness-closeness",
+    type=="sim_bcec" ~ "betweenness-eigenvector",
+    type=="sim_dcbc" ~ "degree-betweenness",
+    type=="sim_dccc" ~ "degree-closeness",
+    type=="sim_dcec" ~ "degree-eigenvector",
+    type=="sim_ccec" ~ "closeness-eigenvector"
+  )) |> 
+  pivot_wider(names_from = N,values_from = frac) |> 
+  # select(1,4:6,2:3,7) |> 
+  knitr::kable(format = "latex",booktabs=TRUE)
 
