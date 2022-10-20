@@ -34,7 +34,7 @@ for(n in N){
   cat(n,"\r")
   cmin <- 10
   for(r in 1:20){
-    A <- as_adj(sample_gnp(n,runif(1,0.02,0.2)),sparse = FALSE)
+    A <- as_adj(sample_gnp(n,runif(1,0.1,0.5)),sparse = FALSE)
     c1 <- degree
     c2 <- closeness2
     res <- optim(par = c(A), fn = max_disc, n=n,c1=c1,c2=c2,gr = gennet,method = "SANN",

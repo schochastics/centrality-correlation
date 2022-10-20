@@ -8,16 +8,16 @@ fl <- fl[!str_detect(fl,"sc")]
 tbl <- map_dfr(fl,function(x){
   df <- readRDS(x)
   df$type <- str_extract(x,"(?<=_)(.*?)(?=\\.)") 
-  df$frac <- df$disc/choose(c(10,15,25),2)
+  df$frac <- df$disc/choose(c(10,15,25,50,100),2)
   df
 })
 
-ggplot(tbl,aes(x=N,y=frac,color=type))+geom_point()+facet_wrap(~type)
-tbl %>% group_by(type) %>% summarise(m=mean(frac)) %>% arrange(-m)
-tbl %>% arrange(-frac) %>% print(n=40)
+# ggplot(tbl,aes(x=N,y=frac,color=type))+geom_point()+facet_wrap(~type)
+# tbl %>% group_by(type) %>% summarise(m=mean(frac)) %>% arrange(-m)
+# tbl %>% arrange(-frac) %>% print(n=40)
 
 tbl_plot <- tbl %>% 
-  dplyr::filter(N==25) %>% 
+  dplyr::filter(N==50) %>% 
   mutate(a=str_remove(type,"sim_") %>% str_sub(1,2),
          b=str_remove(type,"sim_") %>% str_sub(3,4)) %>% 
   mutate(a=factor(a,levels=c("dc","bc","cc","ec")),
