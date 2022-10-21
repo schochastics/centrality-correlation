@@ -41,3 +41,18 @@ p2 <- tibble(
 p1 + p2
 ggsave("figures/rightties_example.pdf",width = 11,height=6)
 system("cp figures/rightties_example.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
+
+core_graph <- threshold_graph(20,0.3)
+B <- as_adj(core_graph,sparse=FALSE)
+deg <- rowSums(B)
+B <- B[order(deg,decreasing = TRUE),order(deg,decreasing = TRUE)]
+core <- sum(core_graph$sequence)+1
+B[1:core,1:core] <- B[1:core,1:core]*2
+seriation::ggpimage(B)+
+  scale_fill_gradient(high="grey25",low="white")+
+  theme(legend.position="none",plot.background = element_rect(fill="white",color="black"))
+  # annotate("rect",xmin=0.5,xmax=10,ymin=10,ymax=20.5)
+
+ggsave("figures/nested_mat.pdf",width=6,height=6)
+system("cp figures/nested_mat.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
+
