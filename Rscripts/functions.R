@@ -158,6 +158,21 @@ cent_disc_no_sc <- function(g){
   res
 }
 
+cent_disc_all <- function(g){
+  df <- all_indices(g)
+  res <- data.frame(combo=NA,disc=rep(NA,choose(ncol(df),2)))
+  k <- 0
+  for(i in 1:(ncol(df)-1)){
+    for(j in (i+1):ncol(df)){
+      k <- k+1
+      res$combo[k] <- paste0(colnames(df)[i],"-",colnames(df)[j])
+      res$disc[k] <- compare_ranks(df[[i]],df[[j]])$discordant
+    }
+  }
+  res
+}
+
+
 
 spectral_gap <- function(g){
   M <- as_adj(g, sparse = TRUE)
@@ -180,69 +195,85 @@ largest_ev <- function(g){
   
   c(fvec$values[1],fvec$values[2])
 }
+# 
+# all_indices <- function(g){
+#   res <- matrix(0,vcount(g),35)
+#   res[,1] <- igraph::degree(g)
+#   res[,2] <- igraph::betweenness(g)
+#   res[,3] <- igraph::closeness(g)
+#   res[,4] <- igraph::eigen_centrality(g)$vector
+#   res[,5] <- 1/igraph::eccentricity(g)
+#   res[,6] <- igraph::subgraph_centrality(g)
+#   
+#   A <- get.adjacency(g,sparse=F)
+#   res[,7] <- sna::flowbet(A)
+#   res[,8] <- sna::loadcent(A)
+#   res[,9] <- sna::gilschmidt(A)
+#   res[,10] <- sna::infocent(A)
+#   res[,11] <- sna::stresscent(A)
+#   
+#   res[,12] <- 1/centiserve::averagedis(g)
+#   res[,13] <- centiserve::barycenter(g)
+#   res[,14] <- centiserve::closeness.currentflow(g)
+#   res[,15] <- centiserve::closeness.latora(g)
+#   res[,16] <- centiserve::closeness.residual(g)
+#   res[,17] <- centiserve::communibet(g)
+#   res[,18] <- centiserve::crossclique(g)
+#   res[,19] <- centiserve::decay(g)
+#   res[,20] <- centiserve::diffusion.degree(g)     
+#   res[,21] <- 1/centiserve::entropy(g)
+#   res[,22] <- centiserve::geokpath(g)
+#   res[,23] <- centiserve::katzcent(g)             
+#   res[,24] <- centiserve::laplacian(g)
+#   res[,25] <- centiserve::leverage(g)             
+#   res[,26] <- centiserve::lincent(g)
+#   res[,27] <- centiserve::lobby(g)
+#   res[,28] <- centiserve::markovcent(g)           
+#   res[,29] <- centiserve::mnc(g)
+#   res[,30] <- centiserve::radiality(g)            
+#   res[,31] <- centiserve::semilocal(g)
+#   res[,32] <- 1/centiserve::topocoefficient(g) 
+#   
+#   res[,33] <- CINNA::dangalchev_closeness_centrality(g)
+#   res[,34] <- CINNA::harmonic_centrality(g)
+#   res[,35] <- 1/CINNA::local_bridging_centrality(g)
+#   apply(res,2,function(x) round(x,8))
+# }
 
 all_indices <- function(g){
-  res <- matrix(0,vcount(g),35)
-  res[,1] <- igraph::degree(g)
-  res[,2] <- igraph::betweenness(g)
-  res[,3] <- igraph::closeness(g)
-  res[,4] <- igraph::eigen_centrality(g)$vector
-  res[,5] <- 1/igraph::eccentricity(g)
-  res[,6] <- igraph::subgraph_centrality(g)
+  mat <- matrix(NA,vcount(g),19)
+  mat[,1] <- degree(g)
+  mat[,2] <- betweenness(g)
+  mat[,3] <- closeness(g)
+  mat[,4] <- eigen_centrality(g)$vector
+  mat[,5] <- subgraph_centrality(g)
+  mat[,6] <- sna::stresscent(as_adj(g,sparse=FALSE))
+  mat[,7] <- centiserve::leverage(g)
+  mat[,8] <- centiserve::laplacian(g)
+  mat[,9] <- sna::infocent(as_adj(g,sparse=FALSE))
+  mat[,10] <- g |> indirect_relations(type = "dist_rwalk") |> aggregate_positions() #rwalk cc
+  mat[,11] <- g |> indirect_relations(type = "depend_curflow") |> aggregate_positions() #rwalk bc
+  mat[,12] <- g |> indirect_relations(type = "depend_exp") |> aggregate_positions() #communicability bc
+  mat[,13] <- g |> indirect_relations(type="dist_sp",FUN=dist_2pow) |>   aggregate_positions(type="sum") #residual closeness (Dangalchev,2006)
   
-  A <- get.adjacency(g,sparse=F)
-  res[,7] <- sna::flowbet(A)
-  res[,8] <- sna::loadcent(A)
-  res[,9] <- sna::gilschmidt(A)
-  res[,10] <- sna::infocent(A)
-  res[,11] <- sna::stresscent(A)
+  #integration centrality (Valente & Foreman, 1998)
+  dist_integration <- function(x){
+    x <- 1 - (x - 1)/max(x)
+  }
+  mat[,14] <- g |> indirect_relations(type="dist_sp",FUN=dist_integration) |> aggregate_positions(type="sum")
   
-  res[,12] <- 1/centiserve::averagedis(g)
-  res[,13] <- centiserve::barycenter(g)
-  res[,14] <- centiserve::closeness.currentflow(g)
-  res[,15] <- centiserve::closeness.latora(g)
-  res[,16] <- centiserve::closeness.residual(g)
-  res[,17] <- centiserve::communibet(g)
-  res[,18] <- centiserve::crossclique(g)
-  res[,19] <- centiserve::decay(g)
-  res[,20] <- centiserve::diffusion.degree(g)     
-  res[,21] <- 1/centiserve::entropy(g)
-  res[,22] <- centiserve::geokpath(g)
-  res[,23] <- centiserve::katzcent(g)             
-  res[,24] <- centiserve::laplacian(g)
-  res[,25] <- centiserve::leverage(g)             
-  res[,26] <- centiserve::lincent(g)
-  res[,27] <- centiserve::lobby(g)
-  res[,28] <- centiserve::markovcent(g)           
-  res[,29] <- centiserve::mnc(g)
-  res[,30] <- centiserve::radiality(g)            
-  res[,31] <- centiserve::semilocal(g)
-  res[,32] <- 1/centiserve::topocoefficient(g) 
-  
-  res[,33] <- CINNA::dangalchev_closeness_centrality(g)
-  res[,34] <- CINNA::harmonic_centrality(g)
-  res[,35] <- 1/CINNA::local_bridging_centrality(g)
-  apply(res,2,function(x) round(x,8))
-}
-
-
-weighted.tau = function(v0,v1){
-  require(rJava)
-  # start the virtual machine
-  .jinit()
-  .jclassLoader()$setDebug(1L)
-  # add all the jar files
-  .jaddClassPath(list.files("/home/david/Documents/projects/centrality/correlation/law-2.3", full.names=T))#/LawLibrary/libs
-  .jaddClassPath("/home/david/Documents/projects/centrality/correlation/law-2.3/law-2.1.jar")
-  #LawLibrary/libs
-  
-  # create a class
-  tau <- .jnew("it/unimi/dsi/law/stat/WeightedTau",check=FALSE)
-  
-  # call a method on it, needs exact signature
-  #v0 <- c(1,2,2) # double[]
-  #v1 <- c(1,2,3) # double[]
-  rank <- as.integer(seq(1,length(v0))) 
-  r <- .jcall(tau, "D", "compute",v0, v1, rank)
-  return(r)
+  #communicability
+  mat[,15] <- g |> indirect_relations(type="walks",FUN=walks_exp) |> aggregate_positions(type="sum")
+  #odd subgraph centrality
+  mat[,16] <- g |> indirect_relations(type="walks",FUN=walks_exp_odd) |> aggregate_positions(type="self")
+  #even subgraph centrality
+  mat[,17] <- g |> indirect_relations(type="walks",FUN=walks_exp_even) |> aggregate_positions(type="self")
+  #katz status
+  mat[,18] <- g |> indirect_relations(type="walks",FUN=walks_attenuated) |> aggregate_positions(type="sum")  
+  mat <- apply(mat,2,function(x) round(x,8))
+  colnames(mat) <- c("degree","betweenness","closeness","eigenvector","subgraph",
+                     "stress","leverage","laplacian","information","rwalk closeness",
+                     "rwalk betweenness","com. betweenness", "residual closeness",
+                     "integration","communicability","odd subgraph","even subgraph","katz status")
+  mat
 }

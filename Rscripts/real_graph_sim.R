@@ -27,7 +27,7 @@ for(i in 1:length(nm)){
     evs <- largest_ev(g)
     res$ev1 <- evs[1]
     res$ev2 <- evs[2]
-    res$spec_gap <- 1-evs[2]/evs[1]
+    res$spec_gap <- evs[2]/evs[1]
     res$mgap <- majorization_gap(g)
     res$modularity <- modularity(g,membership(cluster_louvain(g)))
     res$core <- ifelse(graph.density(g)==1,1,netUtils::core_periphery(g)$corr)
@@ -53,7 +53,7 @@ for(i in 1:length(nm)){
       evs <- largest_ev(g)
       res$ev1 <- evs[1]
       res$ev2 <- evs[2]
-      res$spec_gap <- 1-evs[2]/evs[1]
+      res$spec_gap <- evs[2]/evs[1]
       res$mgap <- majorization_gap(g)
       res$modularity <- modularity(g,membership(cluster_louvain(g)))
       res$core <- ifelse(graph.density(g)==1,1,netUtils::core_periphery(g)$corr)

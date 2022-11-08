@@ -1,11 +1,12 @@
 library(patchwork)
 library(tidyverse)
 library(netropy)
-
+library(igraph)
+library(ggraph)
 df <- read_csv("data/real_sim.csv",show_col_types = FALSE)
 df <- df |> dplyr::filter(dens<1)
 
-# plot all orrelations with topological features ----
+# plot all correlations with topological features ----
 p1 <- df |> 
   ggplot(aes(x=dens,y=disc/choose(n,2),group=combo,col=combo))+
   geom_point(alpha=0.1)+
@@ -41,7 +42,7 @@ p2 <- df |>
   labs(x="diameter",y="")
 
 p3 <- df |> 
-  ggplot(aes(x=1-spec_gap,y=disc/choose(n,2),group=combo,col=combo))+
+  ggplot(aes(x=spec_gap,y=disc/choose(n,2),group=combo,col=combo))+
   geom_point(alpha=0.1)+
   ggpubr::stat_cor(aes(label = ..r.label..),p.accuracy = 0.001, r.accuracy = 0.01)+
   geom_smooth(aes(col=combo),method="lm",se=FALSE)+
@@ -233,10 +234,11 @@ diag(adj) <- 0
 adj[adj < 0.26] <- 0
 ag <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
 V(ag)$name <- str_replace_all(V(ag)$name,"-","\n-\n")
+V(ag)$name <- str_replace_all(V(ag)$name," ","\n")
 ggraph(ag, layout = "stress",bbox=10) + 
   geom_edge_link0(edge_colour = "grey40",aes(edge_width = weight),show.legend = FALSE) + 
   geom_node_point(shape = 21, size = 20, fill = "white", stroke = 1,color="grey66") + 
-  geom_node_text(aes(label = V(ag)$name),size = 5.5,lineheight=0.65) + 
+  geom_node_text(aes(label = V(ag)$name),size = 4.5,lineheight=0.65) + 
   scale_edge_width(range = c(0.5,2))+
   theme_graph() + 
   coord_cartesian(clip = "off")
@@ -287,7 +289,7 @@ p <- map(pp_lst,function(df)
   ggplot(aes(namex,namey,fill=value))+geom_tile()+
   # scale_fill_gradient(limits = c(0,2),low = "#cc0000",
   #                     high = "grey66",na.value = "white",trans="sqrt")+
-  scico::scale_fill_scico(palette = 'roma',na.value="white",limits=c(0,2),
+  scico::scale_fill_scico(palette = 'roma',na.value="grey66",limits=c(0,2),
                           name="expected\nconditional entropy")+ 
   coord_fixed()+
   theme_void()+
