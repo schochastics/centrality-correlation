@@ -267,39 +267,46 @@ pp_lst <- map(pp_lst,function(x){
   x[is.na(x)] <- 0
   x <- x+t(x)
   x[x==0] <- NA
+  diag(x) <- NA #TODO: OK?
   x
 })
 
-max(unlist(pp_lst),na.rm=TRUE)
+mcol <- max(unlist(pp_lst),na.rm=TRUE)
 
-p <- map(pp_lst,function(df)
-  df |> 
+keep <- c("density", "diameter", "spectral gap", "majorization gap", 
+          "modularity", "core-peripheriness", "degree assortativity", "clustering coefficient", 
+          "global efficiency")
+pp_lst <- map(pp_lst,function(x) x[rownames(x)%in%keep,colnames(x)%in%keep])
+
+p <- map(seq_along(pp_lst),function(i){
+  df <- pp_lst[[i]]
+  df <- df |> 
     as_tibble(rownames = "namex") |> 
-    pivot_longer(cols = density:`closeness-eigenvector`,names_to = "namey") |> 
+    pivot_longer(cols = density:`global efficiency`,names_to = "namey") |> 
     mutate(namex=factor(namex,levels=c("density", "diameter", "spectral gap", "majorization gap", 
                                        "modularity", "core-peripheriness", "degree assortativity", "clustering coefficient", 
-                                       "global efficiency", "degree-betweenness", "degree-closeness", 
-                                       "degree-eigenvector", "betweenness-closeness", "betweenness-eigenvector", 
-                                       "closeness-eigenvector"))) |> 
+                                       "global efficiency"))) |> 
     mutate(namey=factor(namey,levels=c("density", "diameter", "spectral gap", "majorization gap", 
                                        "modularity", "core-peripheriness", "degree assortativity", "clustering coefficient", 
-                                       "global efficiency", "degree-betweenness", "degree-closeness", 
-                                       "degree-eigenvector", "betweenness-closeness", "betweenness-eigenvector", 
-                                       "closeness-eigenvector"))) |>  
-  ggplot(aes(namex,namey,fill=value))+geom_tile()+
-  # scale_fill_gradient(limits = c(0,2),low = "#cc0000",
-  #                     high = "grey66",na.value = "white",trans="sqrt")+
-  scico::scale_fill_scico(palette = 'roma',na.value="grey66",limits=c(0,2),
-                          name="expected\nconditional entropy")+ 
-  coord_fixed()+
-  theme_void()+
-  theme(axis.text.x=element_text(size=12, angle=45, vjust=0.95, hjust=1,family="serif"),
-        axis.text.y=element_text(size=12, hjust=0.95,family="serif"),
-        legend.title = element_text(size=14,family="serif"),
-        text = element_text(family="serif"),
-        legend.position = "bottom")+
-  guides(fill=guide_colorbar(barwidth = 10,barheight = 0.5))
-)
+                                       "global efficiency")))
+  ggplot(df,aes(namex,namey,fill=value))+
+    geom_tile()+
+    geom_text(aes(label=ifelse(is.na(value),"X","")),size=5)+
+    scale_fill_gradient(limits = c(0,mcol),low = "black",
+                        high = "white",na.value = "white",name="EH")+
+    
+    # scico::scale_fill_scico(palette = 'roma',na.value="grey66",limits=c(0,2),
+    #                         name="expected\nconditional entropy")+ 
+    coord_fixed()+
+    theme_void()+
+    theme(axis.text.x=element_text(size=12, angle=45, vjust=0.95, hjust=1,family="serif"),
+          axis.text.y=element_text(size=12, hjust=0.95,family="serif"),
+          legend.title = element_text(size=14,family="serif"),
+          text = element_text(family="serif"),
+          legend.position = "bottom")+
+    labs(title = names(pp_lst)[i])+
+    guides(fill=guide_colorbar(barwidth = 10,barheight = 0.5))
+})
 
 wrap_plots(p)+
   plot_layout(nrow=2,byrow = TRUE,guides = "collect")  & theme(legend.position = 'bottom')
