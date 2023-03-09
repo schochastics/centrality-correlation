@@ -12,10 +12,6 @@ tbl <- map_dfr(fl,function(x){
   df
 })
 
-# ggplot(tbl,aes(x=N,y=frac,color=type))+geom_point()+facet_wrap(~type)
-# tbl |> group_by(type) |> summarise(m=mean(frac)) |> arrange(-m)
-# tbl |> arrange(-frac) |> print(n=40)
-
 tbl_plot <- tbl |> 
   dplyr::filter(N==50) |> 
   mutate(a=str_remove(type,"sim_") |> str_sub(1,2),
@@ -80,7 +76,6 @@ ggplot(tbl_plot)+
         strip.text =  element_text(size=12,family="serif"))
 
 ggsave("figures/uncor_sim.pdf",width = 11,height=6)
-system("cp figures/uncor_sim.pdf ~/Dropbox/schofie/centrality_correlation/figures/")  
 
 
 tbl |> 
@@ -96,6 +91,5 @@ tbl |>
     type=="sim_ccec" ~ "closeness-eigenvector"
   )) |> 
   pivot_wider(names_from = N,values_from = frac) |> 
-  # select(1,4:6,2:3,7) |> 
   knitr::kable(format = "latex",booktabs=TRUE)
 

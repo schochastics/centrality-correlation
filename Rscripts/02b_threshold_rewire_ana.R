@@ -38,8 +38,7 @@ ggplot(tbl1)+
   guides(color=guide_legend(nrow=1,override.aes = list(size=2)))
 
 ggsave("figures/rewire_sim.pdf",width = 11,height=6)
-system("cp figures/rewire_sim.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
-  
+
 p1 <- tbl |> 
   distinct(rewire,n,.keep_all = TRUE) |> 
   ggplot(aes(x=rewire,y=mgap,col=as.factor(n)))+geom_line()+
@@ -75,7 +74,6 @@ p2 <- tbl |>
 p1 + p2 + plot_layout(guides = "collect") & theme(legend.position = 'bottom')
 
 ggsave("figures/rewire_mgap.pdf",p1,width = 8,height=8)
-system("cp figures/rewire_mgap.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
 
 tbl |> 
   mutate(mgapf=cut(mgap,breaks=50)) |>
@@ -95,29 +93,3 @@ tbl |>
   labs(x="majorization gap",y = "average fraction of discordant pairs")
 
 ggsave("figures/rewire_mgap_mean.pdf",width = 11,height=6)
-system("cp figures/rewire_mgap_mean.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
-
-df %>%
-  mutate(frac = disc/choose(n,2),mgap2 = mgap^2) %>% 
-  split(.$combo) %>%
-  map(~ lm(frac ~ mgap, data = .)) %>%
-  map(summary) %>%
-  map_dbl("r.squared")  %>% 
-  mean()
-
-
-df %>%
-  mutate(frac = disc/choose(n,2),mgap2 = mgap^2) %>% 
-  split(.$combo) %>%
-  map(~ lm(frac ~ mgap+mgap2, data = .)) %>%
-  map(summary) %>%
-  map_dbl("r.squared")  %>% 
-  mean()
-
-df %>%
-  mutate(frac = disc/choose(n,2),spec_gap=ev2/ev1) %>% 
-  split(.$combo) %>%
-  map(~ lm(frac ~ spec_gap, data = .)) %>%
-  map(summary) %>%
-  map_dbl("r.squared")  %>% 
-  mean()

@@ -3,6 +3,8 @@ library(igraph)
 library(ggraph)
 library(tidyverse)
 library(patchwork)
+
+# Figure 2 ----
 bseq <- c(0, 0, 1, 1, 0, 1, 0, 0, 0, 1)
 tg <- threshold_graph(bseq = c(0, 1, 0, 1, 0, 1, 0, 1, 0, 1))
 V(tg)$name <- LETTERS[1:10]
@@ -31,8 +33,9 @@ p2 <- tibble(
   geom_text(aes(x=type,y=rank,label=label,hjust=ifelse(type=="betweenness",1,0)),family="serif",size=6)+
   theme_minimal()+
   scale_x_discrete(position = "top")+
+  scale_y_continuous(position = "right",labels = c("lowest","highest"),breaks = c(1,10))+
   theme(panel.grid = element_blank(),
-        axis.text.y = element_blank(),
+        axis.line.y = element_line(arrow = grid::arrow(length = unit(0.3, "cm"),type = "closed")),
         axis.text.x = element_text(size=16,family="serif"),
         axis.title = element_blank(),
         plot.title = element_text(hjust=0.5))+
@@ -40,8 +43,8 @@ p2 <- tibble(
 
 p1 + p2
 ggsave("figures/rightties_example.pdf",width = 11,height=6)
-system("cp figures/rightties_example.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
 
+# Figure 1 ----
 core_graph <- threshold_graph(20,0.3)
 B <- as_adj(core_graph,sparse=FALSE)
 deg <- rowSums(B)
@@ -51,8 +54,7 @@ B[1:core,1:core] <- B[1:core,1:core]*2
 seriation::ggpimage(B)+
   scale_fill_gradient(high="grey25",low="white")+
   theme(legend.position="none",plot.background = element_rect(fill="white",color="black"))
-  # annotate("rect",xmin=0.5,xmax=10,ymin=10,ymax=20.5)
 
 ggsave("figures/nested_mat.pdf",width=6,height=6)
-system("cp figures/nested_mat.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
+
 

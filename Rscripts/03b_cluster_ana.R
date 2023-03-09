@@ -1,7 +1,6 @@
 library(igraph)
 library(netrankr)
 library(tidyverse)
-source("Rscripts/functions.R")
 
 n <- 1000
 res <- read_csv("data/cluster_sim_sbm.csv")
@@ -34,7 +33,6 @@ ggplot(tbl1)+
   guides(color=guide_colorbar(barwidth = 10,barheight = 0.5))
 
 ggsave("figures/cluster_sim_sbm.pdf",width = 11,height=6)
-system("cp figures/cluster_sim_sbm.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
 
 cor(res$mod,res$ev2/res$ev1)
 cor(res$mod,res$mgap)
@@ -70,7 +68,6 @@ ggplot(tbl1)+
   guides(color=guide_colorbar(barwidth = 10,barheight = 0.5))
 
 ggsave("figures/cluster_sim_lfr.pdf",width = 11,height=6)
-system("cp figures/cluster_sim_lfr.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
 
 cor(res$mod,res$ev2/res$ev1)
 cor(res$mod,res$mgap)

@@ -1,9 +1,8 @@
 library(igraph)
 library(netrankr)
 library(tidyverse)
-source("Rscripts/functions.R")
 
-pin_seq <- 0.4#seq(0.4,0.99,length.out=15)
+pin_seq <- 0.4
 pout_fac <- seq(0.05,0.99,length.out=50)
 n <- 1000
 k <- 5

@@ -2,7 +2,6 @@ library(networkdata)
 library(igraph)
 library(netrankr)
 library(tidyverse)
-source("Rscripts/functions.R")
 
 d <- data(package = "networkdata")
 nm <- d$results[, "Item"]

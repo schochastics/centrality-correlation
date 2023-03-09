@@ -168,7 +168,7 @@ p <- p1+p2+p3+
   plot_layout(nrow=3,byrow = TRUE,guides = "collect")  & theme(legend.position = 'bottom')
 
 ggsave("figures/real_topo.pdf",p,width = 15,height = 15)
-system("cp figures/real_topo.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
+
 
 #histogram of all variables ----
 cent <- df |> 
@@ -208,7 +208,7 @@ cor_data |>
   labs(x="",y="")
 
 ggsave("figures/real_topo_dens.pdf",width = 15,height = 10)
-system("cp figures/real_topo_dens.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
+
 
 # median dichotomization ----
 cor_data_bin <- cor_data |> 
@@ -244,7 +244,7 @@ ggraph(ag, layout = "stress",bbox=10) +
   coord_cartesian(clip = "off")
 
 ggsave("figures/real_depend_graph.pdf",width = 10,height = 6)
-system("cp figures/real_depend_graph.pdf ~/Dropbox/schofie/centrality_correlation/figures/")
+
 
 # heatmaps predict ----
 pp_degree.betweenness <- prediction_power('degree-betweenness', cor_data_bin)    
@@ -312,4 +312,3 @@ wrap_plots(p)+
   plot_layout(nrow=2,byrow = TRUE,guides = "collect")  & theme(legend.position = 'bottom')
 
 ggsave("figures/real_exp_con_ent.pdf",width=15,height=10)
-system("cp figures/real_exp_con_ent.pdf ~/Dropbox/schofie/centrality_correlation/figures/")

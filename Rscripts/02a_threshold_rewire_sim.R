@@ -1,7 +1,7 @@
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(igraph))
 suppressPackageStartupMessages(library(netrankr))
-source("Rscripts/functions.R")
+
 set.seed(123)
 
 cat("-n=100,p=0.1\n")
