@@ -1,3 +1,7 @@
+# To reproduce all results from the paper, you need to install renv and restore the used packages:
+# install.packages("renv")
+# renv::restore()
+
 # helper script ----
 source("Rscripts/functions.R")
 
